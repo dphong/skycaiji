@@ -9,4 +9,7 @@
  |--------------------------------------------------------------------------
  */
 
-namespace Admin\Model; class RuleModel extends BaseModel{ } ?>
+namespace Admin\Model;
+class RuleModel extends BaseModel
+{
+} ?>

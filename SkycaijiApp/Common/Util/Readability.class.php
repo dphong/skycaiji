@@ -1,5 +1,6 @@
 <?php
 // vim: set et sw=4 ts=4 sts=4 ft=php fdm=marker ff=unix fenc=utf8 nobomb:
+
 /**
  * PHP Readability
  *
@@ -12,10 +13,10 @@
  *      [+] 2011-02-17 初始化版本
  *
  * @date   2013-12-04
- * 
+ *
  * @author mingcheng<i.feelinglucky#gmail.com>
  * @link   http://www.gracecode.com/
- * 
+ *
  * @author Tuxion <team#tuxion.nl>
  * @link   http://tuxion.nl/
  */
@@ -24,7 +25,8 @@ namespace Common\Util;
 
 define("READABILITY_VERSION", 0.21);
 
-class Readability {
+class Readability
+{
     // 保存判定结果的标记位名称
     const ATTR_CONTENT_SCORE = "contentScore";
 
@@ -45,10 +47,10 @@ class Readability {
 
     // 需要删除的标签
     // Note: added extra tags from https://github.com/ridcully
-    private $junkTags = Array("style", "form", "iframe", "script", "button", "input", "textarea", 
-                                "noscript", "select", "option", "object", "applet", "basefont",
-                                "bgsound", "blink", "canvas", "command", "menu", "nav", "datalist",
-                                "embed", "frame", "frameset", "keygen", "label", "marquee", "link");
+    private $junkTags = Array("style", "form", "iframe", "script", "button", "input", "textarea",
+        "noscript", "select", "option", "object", "applet", "basefont",
+        "bgsound", "blink", "canvas", "command", "menu", "nav", "datalist",
+        "embed", "frame", "frameset", "keygen", "label", "marquee", "link");
 
     // 需要删除的属性
     private $junkAttrs = Array("style", "class", "onclick", "onmouseover", "align", "border", "margin");
@@ -56,9 +58,10 @@ class Readability {
 
     /**
      * 构造函数
-     *      @param $input_char 字符串的编码。默认 utf-8，可以省略
+     * @param $input_char 字符串的编码。默认 utf-8，可以省略
      */
-    function __construct($source, $input_char = "utf-8") {
+    function __construct($source, $input_char = "utf-8")
+    {
         $this->source = $source;
 
         // DOM 解析类只能处理 UTF-8 格式的字符
@@ -72,7 +75,7 @@ class Readability {
         try {
             //libxml_use_internal_errors(true);
             // 会有些错误信息，不过不要紧 :^)
-            if (!@$this->DOM->loadHTML('<?xml encoding="'.Readability::DOM_DEFAULT_CHARSET.'">'.$source)) {
+            if (!@$this->DOM->loadHTML('<?xml encoding="' . Readability::DOM_DEFAULT_CHARSET . '">' . $source)) {
                 throw new Exception("Parse HTML Error!");
             }
 
@@ -95,7 +98,8 @@ class Readability {
      *
      * @return String
      */
-    private function preparSource($string) {
+    private function preparSource($string)
+    {
         // 剔除多余的 HTML 编码标记，避免解析出错
         preg_match("/charset=([\w|\-]+);?/", $string, $match);
         if (isset($match[1])) {
@@ -119,28 +123,30 @@ class Readability {
      *
      * @return DOMDocument
      */
-    private function removeJunkTag($RootNode, $TagName) {
-        
+    private function removeJunkTag($RootNode, $TagName)
+    {
+
         $Tags = $RootNode->getElementsByTagName($TagName);
-        
+
         //Note: always index 0, because removing a tag removes it from the results as well.
-        while($Tag = $Tags->item(0)){
+        while ($Tag = $Tags->item(0)) {
             $parentNode = $Tag->parentNode;
             $parentNode->removeChild($Tag);
         }
-        
+
         return $RootNode;
-        
+
     }
 
     /**
      * 删除元素中所有不需要的属性
      */
-    private function removeJunkAttr($RootNode, $Attr) {
+    private function removeJunkAttr($RootNode, $Attr)
+    {
         $Tags = $RootNode->getElementsByTagName("*");
 
         $i = 0;
-        while($Tag = $Tags->item($i++)) {
+        while ($Tag = $Tags->item($i++)) {
             $Tag->removeAttribute($Attr);
         }
 
@@ -153,23 +159,24 @@ class Readability {
      *
      * @return DOMNode
      */
-    private function getTopBox() {
+    private function getTopBox()
+    {
         // 获得页面所有的章节
         $allParagraphs = $this->DOM->getElementsByTagName("p");
 
         // Study all the paragraphs and find the chunk that has the best score.
         // A score is determined by things like: Number of <p>'s, commas, special classes, etc.
         $i = 0;
-        while($paragraph = $allParagraphs->item($i++)) {
-            $parentNode   = $paragraph->parentNode;
+        while ($paragraph = $allParagraphs->item($i++)) {
+            $parentNode = $paragraph->parentNode;
             $contentScore = intval($parentNode->getAttribute(Readability::ATTR_CONTENT_SCORE));
-            $className    = $parentNode->getAttribute("class");
-            $id           = $parentNode->getAttribute("id");
+            $className = $parentNode->getAttribute("class");
+            $id = $parentNode->getAttribute("id");
 
             // Look for a special classname
             if (preg_match("/(comment|meta|footer|footnote)/i", $className)) {
                 $contentScore -= 50;
-            } else if(preg_match(
+            } else if (preg_match(
                 "/((^|\\s)(section|post|hentry|entry[-]?(content|text|body)?|article[-]?(content|text|body)?)(\\s|$))/i",
                 $className)) {
                 $contentScore += 25;
@@ -202,23 +209,23 @@ class Readability {
         // Assignment from index for performance. 
         //     See http://www.peachpit.com/articles/article.aspx?p=31567&seqNum=5 
         for ($i = 0, $len = sizeof($this->parentNodes); $i < $len; $i++) {
-            $parentNode      = $this->parentNodes[$i];
-            $contentScore    = intval($parentNode->getAttribute(Readability::ATTR_CONTENT_SCORE));
+            $parentNode = $this->parentNodes[$i];
+            $contentScore = intval($parentNode->getAttribute(Readability::ATTR_CONTENT_SCORE));
             $orgContentScore = intval($topBox ? $topBox->getAttribute(Readability::ATTR_CONTENT_SCORE) : 0);
 
             // by raywill, 2016-9-2
             // for case: <div><p>xxx</p></div><div><p>yyy</p></div>
             if ($parentNode && $topBox && $topBox->parentNode
-              && $parentNode !== $topBox
-              && $parentNode->parentNode === $topBox->parentNode
-              && $this->scoreMatch($parentNode, $topBox)) { // trust same level
+                && $parentNode !== $topBox
+                && $parentNode->parentNode === $topBox->parentNode
+                && $this->scoreMatch($parentNode, $topBox)) { // trust same level
 
-              $topScore = intval($topBox->getAttribute(Readability::ATTR_CONTENT_SCORE));
-              $topBox = $topBox->parentNode;
-              $topBox->setAttribute(Readability::ATTR_CONTENT_SCORE, $topScore + $contentScore);
+                $topScore = intval($topBox->getAttribute(Readability::ATTR_CONTENT_SCORE));
+                $topBox = $topBox->parentNode;
+                $topBox->setAttribute(Readability::ATTR_CONTENT_SCORE, $topScore + $contentScore);
             } else if ($contentScore && $contentScore > $orgContentScore) {
 
-              $topBox = $parentNode;
+                $topBox = $parentNode;
             }
         }
 
@@ -226,10 +233,11 @@ class Readability {
         return $topBox;
     }
 
-    protected function scoreMatch($n1, $n2) {
-      $n1Score = intval($n1->getAttribute(Readability::ATTR_CONTENT_SCORE));
-      $n2Score = intval($n2->getAttribute(Readability::ATTR_CONTENT_SCORE));
-      return ($n1Score > 0 && $n2Score > 0);
+    protected function scoreMatch($n1, $n2)
+    {
+        $n1Score = intval($n1->getAttribute(Readability::ATTR_CONTENT_SCORE));
+        $n2Score = intval($n2->getAttribute(Readability::ATTR_CONTENT_SCORE));
+        return ($n1Score > 0 && $n2Score > 0);
     }
 
     /**
@@ -237,14 +245,15 @@ class Readability {
      *
      * @return String
      */
-    public function getTitle() {
+    public function getTitle()
+    {
         $split_point = ' - ';
         $titleNodes = $this->DOM->getElementsByTagName("title");
 
-        if ($titleNodes->length 
+        if ($titleNodes->length
             && $titleNode = $titleNodes->item(0)) {
             // @see http://stackoverflow.com/questions/717328/how-to-explode-string-right-to-left
-            $title  = trim($titleNode->nodeValue);
+            $title = trim($titleNode->nodeValue);
             $result = array_map('strrev', explode($split_point, strrev($title)));
             return sizeof($result) > 1 ? array_pop($result) : $title;
         }
@@ -258,22 +267,23 @@ class Readability {
      *
      * @return String
      */
-    public function getLeadImageUrl($node) {
+    public function getLeadImageUrl($node)
+    {
         $images = $node->getElementsByTagName("img");
 
-        if ($images->length){
-			$i = 0;
-			while($leadImage = $images->item($i++)) {
-				$imgsrc = $leadImage->getAttribute("src");
-				$imgdatasrc = $leadImage->getAttribute("data-src");
-				$imgsrclast =  $imgsrc ? $imgsrc : $imgdatasrc;
-				list($img['width'],$img['height'])=getimagesize($imgsrclast);
-				if($img['width'] > 150 && $img['height'] >150){
-					return $imgsrclast;
-				}
-				
-			}
-		}
+        if ($images->length) {
+            $i = 0;
+            while ($leadImage = $images->item($i++)) {
+                $imgsrc = $leadImage->getAttribute("src");
+                $imgdatasrc = $leadImage->getAttribute("data-src");
+                $imgsrclast = $imgsrc ? $imgsrc : $imgdatasrc;
+                list($img['width'], $img['height']) = getimagesize($imgsrclast);
+                if ($img['width'] > 150 && $img['height'] > 150) {
+                    return $imgsrclast;
+                }
+
+            }
+        }
 
         return null;
     }
@@ -284,7 +294,8 @@ class Readability {
      *
      * @return Array
      */
-    public function getContent() {
+    public function getContent()
+    {
         if (!$this->DOM) return false;
 
         // 获取页面标题
@@ -292,11 +303,11 @@ class Readability {
 
         // 获取页面主内容
         $ContentBox = $this->getTopBox();
-        
+
         //Check if we found a suitable top-box.
-        if($ContentBox === null)
+        if ($ContentBox === null)
             throw new \RuntimeException(Readability::MESSAGE_CAN_NOT_GET);
-        
+
         // 复制内容到新的 DOMDocument
         $Target = new \DOMDocument;
         $Target->appendChild($Target->importNode($ContentBox, true));
@@ -322,6 +333,8 @@ class Readability {
         );
     }
 
-    function __destruct() { }
+    function __destruct()
+    {
+    }
 }
 

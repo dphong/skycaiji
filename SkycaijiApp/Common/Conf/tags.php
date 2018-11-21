@@ -9,4 +9,4 @@
  |--------------------------------------------------------------------------
  */
 
-return array( 'app_begin' => array('Behavior\CheckLangBehavior','Common\Behavior\InitBehavior'), ); 
+return array('app_begin' => array('Behavior\CheckLangBehavior', 'Common\Behavior\InitBehavior'),); 

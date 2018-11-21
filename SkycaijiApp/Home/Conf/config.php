@@ -9,4 +9,4 @@
  |--------------------------------------------------------------------------
  */
 
-return array( 'TMPL_ACTION_ERROR' => 'Common:error', );
+return array('TMPL_ACTION_ERROR' => 'Common:error',);

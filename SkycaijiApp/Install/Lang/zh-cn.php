@@ -9,4 +9,4 @@
  |--------------------------------------------------------------------------
  */
 
-return array( 'empty_db'=>'请输入数据库{$type}', 'db_host'=>'主机', 'db_port'=>'端口', 'db_name'=>'名称', 'db_user'=>'用户名', 'db_pwd'=>'密码', 'db_prefix'=>'表前缀', 'user_name'=>'用户名', 'user_pwd'=>'密码', 'user_repwd'=>'确认密码', ); ?>
+return array('empty_db' => '请输入数据库{$type}', 'db_host' => '主机', 'db_port' => '端口', 'db_name' => '名称', 'db_user' => '用户名', 'db_pwd' => '密码', 'db_prefix' => '表前缀', 'user_name' => '用户名', 'user_pwd' => '密码', 'user_repwd' => '确认密码',); ?>
